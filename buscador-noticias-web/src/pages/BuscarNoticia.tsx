@@ -7,7 +7,6 @@ import News from "../models/News";
 type Props = {};
 type State = {
     newsData: News[];
-
 };
 
 
@@ -26,9 +25,7 @@ class BuscarNoticia extends Component<Props, State>{
     }
 
     componentDidMount() {
-        this.newsService.getNews(0, 10).then((response) => {
-            this.setState({ newsData: response.content });
-        });
+        this.newsService.getNews(0, 10).then((response) => this.setState({ newsData: response.content }));
     }
 
     render() {
@@ -63,7 +60,9 @@ class BuscarNoticia extends Component<Props, State>{
                         <Card key={news.id} style={{ marginBottom: 16 }}>
                             <CardContent>
                                 <ListItemText primary={news.title} secondary={news.text} />
-                                <Button variant="contained" color="primary" onClick={() => { /* Implemente a ação de link aqui */ }}>
+                                <Button variant="contained" color="primary" onClick={() => {
+                                    window.open(news.url, '_blank');
+                                }}>
                                     Ler Notícia
                                 </Button>
                             </CardContent>
