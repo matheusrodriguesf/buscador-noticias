@@ -1,4 +1,4 @@
-import { TextField, IconButton, Select, MenuItem, List, ListItemText, Button, Card, CardContent } from "@mui/material";
+import { TextField, IconButton, Select, MenuItem, List, ListItemText, Button, Card, CardContent, Pagination } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
 
 
@@ -58,6 +58,7 @@ function App() {
           </Card>
         ))}
       </List>
+      <Pagination count={10} size="large" />
     </div>
   );
 }
