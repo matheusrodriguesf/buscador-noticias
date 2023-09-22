@@ -12,6 +12,17 @@ class NewsService {
         const body = await response.json();
         return body;
     }
-    
+
+    async searchTitle(title: string, page = 0, size = 10): Promise<Response<News>> {
+        const response = await fetch(`${NewsService.URL}${NewsService.RESOURCE}/search/title/${title}?page=${page}&size=${size}`);
+        const body = await response.json();
+        return body;
+    }
+
+    async searchText(text: string, page = 0, size = 10): Promise<Response<News>> {
+        const response = await fetch(`${NewsService.URL}${NewsService.RESOURCE}/search/text/${text}?page=${page}&size=${size}`);
+        const body = await response.json();
+        return body;
+    }
 }
 export default NewsService;

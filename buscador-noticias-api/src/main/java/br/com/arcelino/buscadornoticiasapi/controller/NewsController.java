@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -29,17 +30,17 @@ public class NewsController {
         return newsService.findAll(pageable);
     }
 
-    @GetMapping("/search-title")
+    @GetMapping("/search/title/{title}")
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
-    public Page<News> searchTitle(String title, Pageable pageable) {
+    public Page<News> searchTitle(@PathVariable String title, Pageable pageable) {
         return newsService.findByTitle(title, pageable);
     }
 
-    @GetMapping("/search-text")
+    @GetMapping("/search/text/{text}")
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
-    public Page<News> searchText(String text, Pageable pageable) {
+    public Page<News> searchText(@PathVariable String text, Pageable pageable) {
         return newsService.findByText(text, pageable);
     }
 }
