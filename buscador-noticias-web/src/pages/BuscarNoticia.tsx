@@ -29,28 +29,42 @@ class BuscarNoticia extends Component<Props, State> {
         this.loadNews();
     }
 
-    private loadNews() {
-        this.newsService.getNews(0, 10).then((response) => this.setState({ newsData: response.content }));
+    private loadNews = async () => {
+        const response = await this.newsService.getNews(0, 10);
+        this.setState({ newsData: response.content });
     }
+
+    private searchTitle = async (title: string) => {
+        const response = await this.newsService.searchTitle(title);
+        this.setState({ newsData: response.content });
+    }
+
+    private searchText = async (text: string) => {
+        const response = await this.newsService.searchText(text);
+        this.setState({ newsData: response.content });
+    }
+
+    private readonly handleSearch = async () => {
+        const { searchTerm, searchOption } = this.state;
+
+        const searchFunctions: { [key: string]: (term: string) => Promise<void> } = {
+            title: this.searchTitle,
+            body: this.searchText,
+        };
+
+        const selectedSearchFunction = searchFunctions[searchOption];
+
+        if (searchTerm && selectedSearchFunction) {
+            await selectedSearchFunction(searchTerm);
+        } else {
+            await this.loadNews();
+        }
+    };
+
 
     private readonly handleTermoSearch = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const searchTerm = event.target.value || event.currentTarget.value;
         this.setState({ searchTerm });
-    };
-
-
-    handleSearch = () => {
-        const { searchTerm, searchOption } = this.state;
-
-        if (searchOption === 'title') {
-            this.newsService.searchTitle(searchTerm).then((response) => this.setState({ newsData: response.content }));
-        } else if (searchOption === 'body') {
-            this.newsService.searchText(searchTerm).then((response) => this.setState({ newsData: response.content }));
-        } else {
-            this.loadNews();
-        }
-
-
     };
 
     render() {
