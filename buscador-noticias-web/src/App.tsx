@@ -1,24 +1,63 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { TextField, IconButton, Select, MenuItem, List, ListItemText, Button, Card, CardContent } from "@mui/material";
+import SearchIcon from '@mui/icons-material/Search';
+
 
 function App() {
+  const newsData = [
+    {
+      id: 1,
+      title: "Título da Notícia 1",
+      body: "Corpo da Notícia 1"
+    },
+    {
+      id: 2,
+      title: "Título da Notícia 2",
+      body: "Corpo da Notícia 2"
+    },
+    {
+      id: 3,
+      title: "Título da Notícia 3",
+      body: "Corpo da Notícia 3"
+    },
+  ];
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <TextField
+        fullWidth
+        variant="outlined"
+        size="medium"
+        placeholder="Pesquisar..."
+        InputProps={{
+          endAdornment: (
+            <>
+              <Select
+                onChange={() => { }}
+                style={{ marginRight: 16 }}
+              >
+                <MenuItem value="title">Título</MenuItem>
+                <MenuItem value="body">Corpo da Notícia</MenuItem>
+              </Select>
+              <IconButton onClick={() => { }} color="primary">
+                <SearchIcon />
+              </IconButton>
+            </>
+          ),
+        }}
+      />
+
+      <List>
+        {newsData.map((news) => (
+          <Card key={news.id} style={{ marginBottom: 16 }}>
+            <CardContent>
+              <ListItemText primary={news.title} secondary={news.body} />
+              <Button variant="contained" color="primary" onClick={() => { /* Implemente a ação de link aqui */ }}>
+                Ler Notícia
+              </Button>
+            </CardContent>
+          </Card>
+        ))}
+      </List>
     </div>
   );
 }
