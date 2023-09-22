@@ -18,4 +18,12 @@ public class NewsService {
         return newsRepository.findAll(pageable);
     }
 
+    public Page<News> findByTitle(String title, Pageable pageable) {
+        return newsRepository.findByTitle(title, pageable);
+    }
+
+    public Page<News> findByText(String text, Pageable pageable) {
+        return newsRepository.findByText(text, pageable);
+    }
+
 }

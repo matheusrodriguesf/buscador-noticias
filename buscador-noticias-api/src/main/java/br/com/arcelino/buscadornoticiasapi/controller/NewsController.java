@@ -27,4 +27,17 @@ public class NewsController {
         return newsService.findAll(pageable);
     }
 
+    @GetMapping("/search-title")
+    @ResponseBody
+    @ResponseStatus(HttpStatus.OK)
+    public Page<News> searchTitle(String title, Pageable pageable) {
+        return newsService.findByTitle(title, pageable);
+    }
+
+    @GetMapping("/search-text")
+    @ResponseBody
+    @ResponseStatus(HttpStatus.OK)
+    public Page<News> searchText(String text, Pageable pageable) {
+        return newsService.findByText(text, pageable);
+    }
 }
