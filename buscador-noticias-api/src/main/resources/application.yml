@@ -1,0 +1,12 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: buscador-noticias
+  elasticsearch:
+    cluster-name: elasticsearch
+    rest:
+      nodes: localhost:9200
+    repositories:
+      enabled: true
