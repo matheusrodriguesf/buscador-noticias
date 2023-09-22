@@ -1,12 +1,17 @@
 import React, { Component } from "react";
-import { TextField, Select, MenuItem, IconButton, List, Card, CardContent, ListItemText, Button, Pagination } from "@mui/material";
+import { TextField, Select, MenuItem, IconButton, List, Card, CardContent, ListItemText, Button, Pagination, Grid } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
 import NewsService from "../service/NewsService";
 import News from "../models/News";
 
 type Props = {};
 type State = {
+    totalElements: number,
     newsData: News[];
+    pageable: {
+        page: number,
+        size: number,
+    },
     searchTerm: string;
     searchOption: string;
 };
@@ -17,7 +22,12 @@ class BuscarNoticia extends Component<Props, State> {
     constructor(props: Props | Readonly<Props>) {
         super(props);
         this.state = {
+            totalElements: 0,
             newsData: [],
+            pageable: {
+                page: 0,
+                size: 10,
+            },
             searchTerm: '',
             searchOption: '',
         };
@@ -29,9 +39,17 @@ class BuscarNoticia extends Component<Props, State> {
         this.loadNews();
     }
 
-    private loadNews = async () => {
-        const response = await this.newsService.getNews(0, 10);
-        this.setState({ newsData: response.content });
+    private loadNews = async (page = 0, size = 10) => {
+        try {
+            this.setState({
+                pageable: { ...this.state.pageable, size, page }
+            });
+            const { content, totalElements } = await this.newsService.getNews(page, size);
+            this.setState({ newsData: content, totalElements });
+        } catch (err) {
+            throw err;
+        }
+
     }
 
     private searchTitle = async (title: string) => {
@@ -67,48 +85,91 @@ class BuscarNoticia extends Component<Props, State> {
         this.setState({ searchTerm });
     };
 
-    render() {
-        const { newsData, searchOption } = this.state;
-        return (
-            <div>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <TextField
-                        fullWidth
-                        variant="outlined"
-                        size="medium"
-                        placeholder="Pesquisar..."
-                        value={this.state.searchTerm}
-                        onChange={this.handleTermoSearch}
-                    />
-                    <Select
-                        value={searchOption}
-                        onChange={(e) => this.setState({ searchOption: e.target.value })}
-                        style={{ marginRight: 16 }}
-                    >
-                        <MenuItem value="title">Título</MenuItem>
-                        <MenuItem value="body">Corpo da Notícia</MenuItem>
-                    </Select>
-                    <IconButton onClick={this.handleSearch} color="primary">
-                        <SearchIcon />
-                    </IconButton>
-                </div>
+    private readonly handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        if (event.key === 'Enter') {
+            this.handleSearch();
+        }
+    };
 
-                <List>
-                    {newsData.map((news) => (
-                        <Card key={news.id} style={{ marginBottom: 16 }}>
-                            <CardContent>
-                                <ListItemText primary={news.title} secondary={news.text} />
-                                <Button variant="contained" color="primary" onClick={() => { window.open(news.url, '_blank'); }}>
-                                    Ler Notícia
-                                </Button>
-                            </CardContent>
-                        </Card>
-                    ))}
-                </List>
-                <Pagination count={10} size="large" />
-            </div>
+
+    render() {
+        return (
+            this.content()
         );
     }
-}
 
+    private content() {
+        const { newsData, searchOption } = this.state;
+        return (
+            <Grid>
+                {this.inputSearchComponent(searchOption)}
+                {this.listNews(newsData)}
+                {this.paginationComponent()}
+            </Grid>
+        );
+    }
+
+    private inputSearchComponent(searchOption: string) {
+        return (
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+                <TextField
+                    fullWidth
+                    variant="outlined"
+                    size="medium"
+                    placeholder="Pesquisar..."
+                    value={this.state.searchTerm}
+                    onChange={this.handleTermoSearch}
+                    inputProps={{ onKeyDown: this.handleKeyDown }}
+                />
+                <Select
+                    value={searchOption}
+                    onChange={(e) => this.setState({ searchOption: e.target.value })}
+                    style={{ marginRight: 16 }}
+                >
+                    <MenuItem value="title">Título</MenuItem>
+                    <MenuItem value="body">Corpo da Notícia</MenuItem>
+                </Select>
+                <IconButton onClick={this.handleSearch} color="primary">
+                    <SearchIcon />
+                </IconButton>
+            </div>
+
+        );
+    }
+
+    private paginationComponent() {
+        const handleChangePage = async (_event: unknown, page: number) => {
+            const pageIndex = page - 1;
+            await this.loadNews(pageIndex, this.state.pageable.size);
+        };
+        return (
+            <Pagination
+                count={this.state.totalElements}
+                page={this.state.pageable.page + 1}
+                onChange={handleChangePage}
+                size="large" />
+        );
+    }
+
+    private listNews(newsData: News[]) {
+        return (
+            <List>
+                {newsData.map((news) => (
+                    <Card key={news.id} style={{ marginBottom: 16 }}>
+                        <CardContent>
+                            <ListItemText
+                                primary={<span style={{ fontWeight: 'bold' }}>{news.title}</span>}
+                                secondary={<div style={{ textAlign: 'justify' }}>{news.text}</div>}
+                            />
+                            <Button variant="contained" color="primary" onClick={() => { window.open(news.url, '_blank'); }}>
+                                Ler Notícia
+                            </Button>
+                        </CardContent>
+                    </Card>
+                ))}
+            </List>
+        );
+    }
+
+}
 export default BuscarNoticia;
